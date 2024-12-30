@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Trading Game with Lottery</title>
+  <style>
+    /* Add your CSS here */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      width: 90%;
+      max-width: 450px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+    }
+    /* Add other styles from the provided code */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Color Trading Game with Lottery</div>
+    <div class="balance" id="balance">Balance: $100</div>
+    <div class="bet-input">
+      <label for="betAmount">Bet Amount:</label>
+      <input type="number" id="betAmount" placeholder="Enter amount" />
+    </div>
+    <div class="timer" id="timer">Time Remaining: 10</div>
+    <div class="buttons">
+      <button class="green" onclick="placeBet('Green')">Green</button>
+      <button class="violet" onclick="placeBet('Violet')">Violet</button>
+      <button class="red" onclick="placeBet('Red')">Red</button>
+    </div>
+    <div class="payment-methods">
+      <button onclick="addFunds('UPI')">Add Funds via UPI</button>
+      <button onclick="addFunds('Bank')">Add Funds via Bank</button>
+      <button onclick="addFunds('PayPal')">Add Funds via PayPal</button>
+    </div>
+    <div class="lottery">
+      <h3>Lottery Numbers</h3>
+      <div class="lottery-numbers" id="lotteryNumbers"></div>
+    </div>
+    <div class="history">
+      <h3>Game History</h3>
+      <ul id="history"></ul>
+    </div>
+  </div>
+  <script>
+    /* Add JavaScript from the provided code */
+    let countdown = 10;
+    let timerInterval;
+    let gameHistory = [];
+    let balance = 100; 
+    let currentBet = null;
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      countdown = 10;
+      updateTimer();
+      timerInterval = setInterval(() => {
+        countdown--;
+        updateTimer();
+        if (countdown <= 0) {
+          clearInterval(timerInterval);
+          calculateResult();
+          resetGame();
+        }
+      }, 1000);
+    }
+
+    function updateTimer() {
+      document.getElementById("timer").textContent = `Time Remaining: ${countdown}`;
+    }
+
+    function calculateResult() {
+      const colors = ["Green", "Violet", "Red"];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      alert(`Winning Color: ${randomColor}`);
+      processBetResult(randomColor);
+      addToHistory(randomColor);
+      generateLotteryNumbers();
+    }
+
+    function placeBet(color) {
+      const betInput = document.getElementById("betAmount").value;
+      const betAmount = parseFloat(betInput);
+      if (isNaN(betAmount) || betAmount <= 0) {
+        alert("Please enter a valid bet amount!");
+        return;
+      }
+      if (balance < betAmount) {
+        alert("Insufficient balance to place this bet!");
+        return;
+      }
+      currentBet = color;
+      balance -= betAmount;
+      updateBalance();
+      alert(`You placed a $${betAmount} bet on ${color}`);
+    }
+
+    function processBetResult(winningColor) {
+      const betInput = document.getElementById("betAmount").value;
+      const betAmount = parseFloat(betInput);
+      if (currentBet === winningColor) {
+        const winnings = betAmount * 2;
+        balance += winnings;
+        alert(`You won! You earned $${winnings}`);
+      } else {
+        alert("You lost! Better luck next time.");
+      }
+      updateBalance();
+      currentBet = null;
+    }
+
+    function addToHistory(winningColor) {
+      gameHistory.push(winningColor);
+      const historyElement = document.getElementById("history");
+      const listItem = document.createElement("li");
+      listItem.textContent = `Winning Color: ${winningColor}`;
+      historyElement.appendChild(listItem);
+    }
+
+    function updateBalance() {
+      document.getElementById("balance").textContent = `Balance: $${balance}`;
+    }
+
+    function addFunds(method) {
+      let amount = parseFloat(prompt(`Enter the amount to add via ${method}:`));
+      if (!amount || amount <= 0) {
+        alert("Invalid amount entered.");
+        return;
+      }
+      balance += amount;
+      updateBalance();
+      alert(`$${amount} added to your balance via ${method}.`);
+    }
+
+    function generateLotteryNumbers() {
+      const lotteryNumbers = [];
+      for (let i = 0; i < 5; i++) {
+        lotteryNumbers.push(Math.floor(Math.random() * 50) + 1);
+      }
+      document.getElementById("lotteryNumbers").textContent = `Lottery Numbers: ${lotteryNumbers.join(", ")}`;
+    }
+
+    function resetGame() {
+      startTimer();
+    }
+
+    startTimer();
+  </script>
+</body>
+</html>
