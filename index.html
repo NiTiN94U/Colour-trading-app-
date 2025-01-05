@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Color Trading Game with Lottery</title>
   <style>
-    /* Add your CSS here */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
       font-family: 'Arial', sans-serif;
       background-color: #f0f4f8;
@@ -19,16 +19,159 @@
       align-items: center;
       min-height: 100vh;
     }
+
     .container {
       width: 90%;
       max-width: 450px;
       background: #ffffff;
       border-radius: 12px;
       box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-      padding: 20px;
+      padding: 10px;
       text-align: center;
     }
-    /* Add other styles from the provided code */
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .balance {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #555;
+    }
+
+    .bet-input {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bet-input input {
+      width: 60%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .timer {
+      font-size: 30px;
+      font-weight: bold;
+      margin-botbal 35apx;
+      color: #ff5722;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+
+    .buttons button {
+      width: 30%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .green {
+      background-color: #4caf50;
+      color: #fff;
+    }
+
+    .green:hover {
+      background-color: #45a049;
+      transform: scale(1.1);
+    }
+
+    .violet {
+      background-color: #9c27b0;
+      color: #fff;
+    }
+
+    .violet:hover {
+      background-color: #8e24aa;
+      transform: scale(1.1);
+    }
+
+    .red {
+      background-color: #f44336;
+      color: #fff;
+    }
+
+    .red:hover {
+      background-color: #e53935;
+      transform: scale(1.1);
+    }
+
+    .payment-methods {
+      margin-bottom: 20px;
+    }
+
+    .payment-methods button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2196f3;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .payment-methods button:hover {
+      background-color: #1976d2;
+      transform: scale(1.02);
+    }
+
+    .history {
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    .history h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .history ul {
+      list-style: none;
+    }
+
+    .history li {
+      font-size: 14px;
+      padding: 5px 0;
+      color: #666;
+    }
+
+    .lottery {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .lottery h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .lottery-numbers {
+      font-size: 16px;
+      font-weight: bold;
+      color: #ff5722;
+    }
   </style>
 </head>
 <body>
@@ -40,40 +183,46 @@
       <input type="number" id="betAmount" placeholder="Enter amount" />
     </div>
     <div class="timer" id="timer">Time Remaining: 10</div>
+
     <div class="buttons">
       <button class="green" onclick="placeBet('Green')">Green</button>
       <button class="violet" onclick="placeBet('Violet')">Violet</button>
       <button class="red" onclick="placeBet('Red')">Red</button>
     </div>
+
     <div class="payment-methods">
       <button onclick="addFunds('UPI')">Add Funds via UPI</button>
       <button onclick="addFunds('Bank')">Add Funds via Bank</button>
       <button onclick="addFunds('PayPal')">Add Funds via PayPal</button>
     </div>
+
     <div class="lottery">
       <h3>Lottery Numbers</h3>
       <div class="lottery-numbers" id="lotteryNumbers"></div>
     </div>
+
     <div class="history">
       <h3>Game History</h3>
       <ul id="history"></ul>
     </div>
   </div>
+
   <script>
-    /* Add JavaScript from the provided code */
     let countdown = 10;
     let timerInterval;
     let gameHistory = [];
-    let balance = 100; 
+    let balance = 100; // Starting balance
     let currentBet = null;
 
     function startTimer() {
-      clearInterval(timerInterval);
-      countdown = 10;
-      updateTimer();
+      clearInterval(timerInterval); // Clear any existing interval
+      countdown = 10; // Reset the countdown
+      updateTimer(); // Display the initial timer value
+
       timerInterval = setInterval(() => {
         countdown--;
         updateTimer();
+
         if (countdown <= 0) {
           clearInterval(timerInterval);
           calculateResult();
@@ -98,14 +247,17 @@
     function placeBet(color) {
       const betInput = document.getElementById("betAmount").value;
       const betAmount = parseFloat(betInput);
+
       if (isNaN(betAmount) || betAmount <= 0) {
         alert("Please enter a valid bet amount!");
         return;
       }
+
       if (balance < betAmount) {
         alert("Insufficient balance to place this bet!");
         return;
       }
+
       currentBet = color;
       balance -= betAmount;
       updateBalance();
@@ -115,8 +267,9 @@
     function processBetResult(winningColor) {
       const betInput = document.getElementById("betAmount").value;
       const betAmount = parseFloat(betInput);
+
       if (currentBet === winningColor) {
-        const winnings = betAmount * 2;
+        const winnings = betAmount * 2; // Winner gets double the bet
         balance += winnings;
         alert(`You won! You earned $${winnings}`);
       } else {
@@ -158,9 +311,10 @@
     }
 
     function resetGame() {
-      startTimer();
+      startTimer(); // Restart the timer
     }
 
+    // Start the game on load
     startTimer();
   </script>
 </body>
