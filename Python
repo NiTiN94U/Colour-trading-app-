@@ -1,0 +1,51 @@
+import librosa
+import soundfile as sf
+import numpy as np
+from pydub import AudioSegment
+from pydub.effects import speedup, reverb
+
+# Load the audio file
+def load_audio(file_path):
+    audio, sr = librosa.load(file_path, sr=None)
+    return audio, sr
+
+# Slow down the audio
+def slow_down(audio, sr, speed_factor=0.75):
+    return librosa.effects.time_stretch(audio, rate=speed_factor)
+
+# Add reverb effect
+def add_reverb(audio, sr, delay=0.5, decay=0.5):
+    # Convert to pydub AudioSegment
+    audio_segment = AudioSegment(
+        audio.tobytes(),
+        frame_rate=sr,
+        sample_width=audio.dtype.itemsize,
+        channels=1 if len(audio.shape) == 1 else 2
+    )
+    # Apply reverb
+    reverb_audio = reverb(audio_segment, delay=delay, decay=decay)
+    return np.array(reverb_audio.get_array_of_samples()), sr
+
+# Save the processed audio
+def save_audio(audio, sr, output_path):
+    sf.write(output_path, audio, sr)
+
+# Main function
+def create_slowed_reverb(input_path, output_path, speed_factor=0.75, delay=0.5, decay=0.5):
+    # Load audio
+    audio, sr = load_audio(input_path)
+    
+    # Slow down audio
+    slowed_audio = slow_down(audio, sr, speed_factor)
+    
+    # Add reverb
+    reverb_audio, sr = add_reverb(slowed_audio, sr, delay, decay)
+    
+    # Save the result
+    save_audio(reverb_audio, sr, output_path)
+    print(f"Processed audio saved to {output_path}")
+
+# Example usage
+input_file = "input_song.mp3"
+output_file = "slowed_reverb_song.wav"
+create_slowed_reverb(input_file, output_file, speed_factor=0.75, delay=0.5, decay=0.5)
